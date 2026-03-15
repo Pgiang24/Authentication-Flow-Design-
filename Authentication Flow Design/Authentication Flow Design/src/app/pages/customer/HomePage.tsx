@@ -1,0 +1,289 @@
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { Star, ShoppingCart, ChevronRight, ArrowRight, ChevronDown } from "lucide-react";
+import { PRODUCTS, formatPrice } from "../../data/products";
+import { useCart } from "../../context/CartContext";
+
+function ProductCard({ product }: { product: (typeof PRODUCTS)[0] }) {
+  const { addToCart } = useCart();
+  const defaultVariant = product.variants[0];
+  const inStock = product.variants.some((v) => v.stock > 0);
+  const [comboOpen, setComboOpen] = useState(false);
+
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100">
+      <Link to={`/customer/product/${product.id}`} className="block relative overflow-hidden">
+        <img
+          src={product.image}
+          alt={product.name}
+          className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          {!inStock && <span className="px-2.5 py-1 bg-gray-800/80 text-white text-xs rounded-full font-medium">Hết hàng</span>}
+          {product.isCombo && <span className="px-2.5 py-1 bg-purple-600 text-white text-xs rounded-full font-medium">Combo</span>}
+          {product.tags.includes("bestseller") && inStock && !product.isCombo && <span className="px-2.5 py-1 bg-[#d35f1a] text-white text-xs rounded-full font-medium">Bán chạy</span>}
+          {product.tags.includes("premium") && inStock && !product.isCombo && <span className="px-2.5 py-1 bg-[#D4A853] text-white text-xs rounded-full font-medium">Cao cấp</span>}
+        </div>
+      </Link>
+
+      <div className="p-4">
+        <Link to={`/customer/product/${product.id}`}>
+          <h3 className="font-semibold text-gray-900 group-hover:text-[#d35f1a] transition-colors leading-snug">{product.name}</h3>
+          <p className="text-gray-500 text-sm mt-1 line-clamp-2 leading-relaxed">{product.description}</p>
+        </Link>
+
+        <div className="flex items-center gap-1 mt-2">
+          {[...Array(5)].map((_, i) => (
+            <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? "fill-[#D4A853] text-[#D4A853]" : "text-gray-200"}`} />
+          ))}
+          <span className="text-xs text-gray-500 ml-1">({product.reviews} đánh giá)</span>
+        </div>
+
+        <div className="flex items-center justify-between mt-3">
+          <div>
+            <div className="font-bold text-[#d35f1a] text-lg">{formatPrice(defaultVariant.price)}</div>
+            <div className="text-xs text-gray-400">{defaultVariant.weight}</div>
+          </div>
+          <button
+            onClick={() => inStock && addToCart(product, defaultVariant.weight)}
+            disabled={!inStock}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+              inStock ? "bg-[#d35f1a] text-white hover:bg-[#c05518] active:scale-95" : "bg-gray-100 text-gray-400 cursor-not-allowed"
+            }`}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span className="hidden sm:inline">Thêm</span>
+          </button>
+        </div>
+
+        {product.isCombo && product.comboItems && (
+          <div className="mt-3 border-t border-gray-100 pt-3">
+            <button
+              onClick={() => setComboOpen((prev) => !prev)}
+              className="w-full flex items-center justify-between text-sm font-semibold text-purple-700 hover:text-purple-900 transition-colors"
+            >
+              <span>Xem {product.comboItems.length} món trong combo</span>
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${comboOpen ? "rotate-180" : ""}`} />
+            </button>
+            <div className={`overflow-hidden transition-all duration-300 ease-in-out ${comboOpen ? "max-h-[500px] opacity-100 mt-3" : "max-h-0 opacity-0"}`}>
+              <div className="space-y-2">
+                {product.comboItems.map((item, idx) => (
+                  <div key={item.id} className="flex items-start gap-3 p-2.5 bg-purple-50 rounded-xl border border-purple-100">
+                    <div className="w-6 h-6 rounded-full bg-purple-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{idx + 1}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-gray-800 leading-snug">{item.name}</span>
+                        <span className="text-xs font-bold text-[#d35f1a] flex-shrink-0">{formatPrice(item.price)}</span>
+                      </div>
+                      <div className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</div>
+                      <div className="text-xs text-purple-600 font-medium mt-0.5">{item.weight}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 p-2 bg-[#d35f1a]/10 rounded-xl flex items-center justify-between">
+                <span className="text-xs text-gray-600 font-medium">
+                  Tổng giá trị:{" "}
+                  <span className="line-through text-gray-400">
+                    {formatPrice(product.comboItems.reduce((s, c) => s + c.price, 0))}
+                  </span>
+                </span>
+                <span className="text-sm font-bold text-[#d35f1a]">Combo: {formatPrice(defaultVariant.price)}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  const navigate = useNavigate();
+  const featuredProducts = PRODUCTS.filter((p) => p.featured).slice(0, 3);
+
+  return (
+    <div>
+
+      {/* ── HERO ── */}
+      <section className="relative overflow-hidden min-h-[520px] flex items-center justify-center">
+        <img
+          src="https://images.unsplash.com/photo-1750512705099-9273d6d50df8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1600"
+          alt="Thịt hun khói"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/30" />
+        <div
+          className="relative z-10 mx-4 my-12 px-8 py-8 rounded-2xl text-center max-w-md"
+          style={{ background: "rgba(211, 95, 26, 0.78)" }}
+        >
+          <p className="text-white/90 text-xl mb-2 italic">Đừng bỏ lỡ!</p>
+          <h1 className="text-3xl md:text-4xl font-black leading-tight mb-3 uppercase tracking-tight">
+            <span className="text-[#ffe0c8]">Thịt hun khói<br />đích thực,</span><br />
+            <span className="text-white">bạn sẽ mê ngay</span>
+          </h1>
+          <p className="text-white/85 text-sm leading-relaxed mb-6">
+            Chế biến thủ công theo phương pháp truyền thống, hun khói chậm bằng củi tự nhiên. Không chất bảo quản, không cắt xén.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => navigate("/customer/products")}
+              className="px-8 py-3 bg-white text-[#d35f1a] rounded-full font-bold text-sm uppercase tracking-widest transition-all hover:bg-[#fff5ee] active:scale-95"
+            >
+              Mua ngay
+            </button>
+            <a
+              href="#featured"
+              className="px-8 py-3 border-2 border-white text-white rounded-full font-bold text-sm uppercase tracking-widest transition-all hover:bg-white/15 active:scale-95"
+            >
+              Xem nổi bật
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 3 BANNER ── */}
+      <section className="py-6 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+            {/* Banner 1 — Đặc sản Tây Bắc */}
+            <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
+              <img
+                src="https://images.unsplash.com/photo-1757967708227-c67e37e7c96a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 p-5 flex flex-col justify-between">
+                <div className="w-10 h-10 bg-[#D4A853] rounded-full flex flex-col items-center justify-center text-white font-black leading-tight shadow text-center flex-shrink-0 self-end">
+                  <span className="text-[6px] leading-none">MUA 2</span>
+                  <span className="text-[9px] leading-none">TẶNG</span>
+                  <span className="text-[6px] leading-none">1 FREE</span>
+                </div>
+                <div>
+                  <h3 className="text-white text-2xl font-black leading-tight mb-1">Đặc Sản<br />Tây Bắc</h3>
+                  <p className="text-white/75 text-xs mb-3">Thịt hun khói truyền thống, tươi từ núi rừng</p>
+                  <Link to="/customer/products" className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide transition-all hover:bg-[#fff5ee]">
+                    Đặt ngay <ArrowRight className="w-3 h-3" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Banner 2 — Combo */}
+            <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
+              <img
+                src="https://images.unsplash.com/photo-1674066620885-6220ec2857f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                <span className="inline-block mb-2 px-2.5 py-0.5 bg-purple-600 text-white text-[10px] font-bold rounded-full w-fit">COMBO ĐẶC BIỆT</span>
+                <h3 className="text-white text-2xl font-black leading-tight mb-1">Mỹ Vị<br />Nhân Gian</h3>
+                <p className="text-white/75 text-xs mb-3">Trọn bộ 5 vị đặc sản tinh tuyển</p>
+                <Link to="/customer/products?category=sausage" className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide transition-all hover:bg-[#fff5ee] w-fit">
+                  Xem combo <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+
+            {/* Banner 3 — Free ship */}
+            <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
+              <img
+                src="https://images.unsplash.com/photo-1586816001966-79b736744398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 p-5 flex flex-col justify-end">
+                <span className="inline-block mb-2 px-2.5 py-0.5 bg-[#2D6A4F] text-white text-[10px] font-bold rounded-full w-fit">MIỄN PHÍ VẬN CHUYỂN</span>
+                <h3 className="text-white text-2xl font-black leading-tight mb-1">Free Ship<br />Toàn Quốc</h3>
+                <p className="text-white/75 text-xs mb-3">Đơn hàng từ 500.000đ</p>
+                <Link to="/customer/products" className="inline-flex items-center gap-1 px-4 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide transition-all hover:bg-[#fff5ee] w-fit">
+                  Mua ngay <ArrowRight className="w-3 h-3" />
+                </Link>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* ── SẢN PHẨM NỔI BẬT ── */}
+      <section id="featured" className="max-w-6xl mx-auto px-6 py-14">
+        <div className="flex items-end justify-between mb-8">
+          <div>
+            <p className="text-[#d35f1a] italic text-sm font-medium mb-1">Đặc sản của chúng tôi</p>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">SẢN PHẨM NỔI BẬT</h2>
+          </div>
+          <Link
+            to="/customer/products"
+            className="hidden sm:flex items-center gap-2 text-sm font-semibold text-[#7C2D12] hover:text-[#6B2510] transition-colors"
+          >
+            Xem tất cả <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {featuredProducts.map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+
+        <div className="text-center mt-10">
+          <Link
+            to="/customer/products"
+            className="inline-flex items-center gap-2 px-10 py-4 bg-[#7C2D12] hover:bg-[#6B2510] text-white rounded-full font-bold text-sm transition-all hover:scale-105 shadow-lg shadow-[#7C2D12]/20"
+          >
+            Xem tất cả sản phẩm <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </section>
+
+      {/* ── 3 ĐIỂM NỔI BẬT ── */}
+      <section className="bg-[#7C2D12] py-12">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center text-white">
+            {[
+              { icon: "🔥", title: "Hun khói chậm 12 giờ", sub: "Giữ trọn hương vị tự nhiên" },
+              { icon: "🏔️", title: "Nguồn gốc Tây Bắc", sub: "Thịt tươi từ vùng núi cao" },
+              { icon: "✅", title: "Chứng nhận VSATTP", sub: "An toàn thực phẩm đảm bảo" },
+            ].map((item) => (
+              <div key={item.title} className="flex flex-col items-center gap-3">
+                <span className="text-4xl">{item.icon}</span>
+                <div>
+                  <div className="font-bold text-base">{item.title}</div>
+                  <div className="text-white/70 text-sm mt-1">{item.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── VỀ CHÚNG TÔI ── */}
+      <section id="about" className="relative mx-4 md:mx-8 rounded-3xl overflow-hidden my-16">
+        <img
+          src="https://images.unsplash.com/photo-1761054522074-1055ffd67616?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"
+          alt="Trang trại ALE"
+          className="w-full h-64 md:h-80 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#2D6A4F]/90 via-[#2D6A4F]/60 to-transparent flex items-center">
+          <div className="px-8 md:px-16 max-w-lg">
+            <p className="text-[#D4A853] text-xs font-bold uppercase tracking-widest mb-2">Thành lập 2010</p>
+            <h3 className="text-white font-black text-3xl md:text-4xl mb-3 leading-tight">Câu chuyện<br />của chúng tôi</h3>
+            <p className="text-white/80 text-sm leading-relaxed mb-5">
+              Toạ lạc trên vùng cao Tây Bắc, trang trại chúng tôi đã nuôi động vật thả vườn từ năm 2010. Mỗi sản phẩm kể câu chuyện của núi rừng — chân thực, không cắt xén.
+            </p>
+            <button className="px-6 py-2.5 bg-white text-[#2D6A4F] rounded-full text-sm font-bold hover:bg-gray-50 transition-colors">
+              Tìm hiểu thêm
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
+}

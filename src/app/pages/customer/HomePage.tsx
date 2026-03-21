@@ -48,6 +48,7 @@ function ProductCard({ product }: { product: Product }) {
           <p className="text-gray-500 text-sm mt-1 line-clamp-2 leading-relaxed">{product.description}</p>
         </Link>
 
+        {/* Rating + số đánh giá */}
         <div className="flex items-center gap-1 mt-2">
           {[...Array(5)].map((_, i) => (
             <Star
@@ -55,7 +56,10 @@ function ProductCard({ product }: { product: Product }) {
               className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? "fill-[#D4A853] text-[#D4A853]" : "text-gray-200"}`}
             />
           ))}
-          <span className="text-xs text-gray-500 ml-1">({product.reviews} đánh giá)</span>
+          <span className="text-xs font-semibold text-gray-700 ml-0.5">{product.rating}</span>
+          <span className="text-xs text-gray-400">
+            ({product.reviews > 0 ? `${product.reviews} đánh giá` : "Chưa có"})
+          </span>
         </div>
 
         <div className="flex items-center justify-between mt-3">
@@ -90,7 +94,6 @@ function ProductCard({ product }: { product: Product }) {
               <div className="space-y-2">
                 {product.comboItems.map((item: ComboItem, idx: number) => (
                   <div key={item.id} className="flex items-start gap-3 p-2.5 bg-purple-50 rounded-xl border border-purple-100">
-                    {/* Ảnh món con */}
                     <img
                       src={item.image || product.image}
                       alt={item.name}
@@ -235,11 +238,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
             <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
-              <img
-                src="https://images.unsplash.com/photo-1757967708227-c67e37e7c96a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600"
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              <img src="https://images.unsplash.com/photo-1757967708227-c67e37e7c96a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600" alt="" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
               <div className="absolute inset-0 p-5 flex flex-col justify-between">
                 <div className="self-end w-11 h-11 bg-[#D4A853] rounded-full flex flex-col items-center justify-center text-white font-black leading-tight shadow-lg text-center">
@@ -250,10 +249,7 @@ export default function HomePage() {
                 <div>
                   <h3 className="text-white text-xl font-black leading-tight mb-1">Đặc Sản<br />Tây Bắc</h3>
                   <p className="text-white/70 text-xs mb-3">Thịt hun khói truyền thống</p>
-                  <Link
-                    to="/products"
-                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide hover:bg-[#fff5ee] transition-colors"
-                  >
+                  <Link to="/products" className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide hover:bg-[#fff5ee] transition-colors">
                     Đặt ngay <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -261,44 +257,26 @@ export default function HomePage() {
             </div>
 
             <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
-              <img
-                src="https://images.unsplash.com/photo-1674066620885-6220ec2857f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600"
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              <img src="https://images.unsplash.com/photo-1674066620885-6220ec2857f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600" alt="" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
               <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                <span className="inline-block mb-2 px-2.5 py-0.5 bg-purple-600 text-white text-[10px] font-bold rounded-full w-fit uppercase tracking-wide">
-                  Combo đặc biệt
-                </span>
+                <span className="inline-block mb-2 px-2.5 py-0.5 bg-purple-600 text-white text-[10px] font-bold rounded-full w-fit uppercase tracking-wide">Combo đặc biệt</span>
                 <h3 className="text-white text-xl font-black leading-tight mb-1">Mỹ Vị<br />Nhân Gian</h3>
                 <p className="text-white/70 text-xs mb-3">Trọn bộ 5 vị tinh tuyển</p>
-                <Link
-                  to="/products?category=sausage"
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide hover:bg-[#fff5ee] transition-colors w-fit"
-                >
+                <Link to="/products?category=sausage" className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide hover:bg-[#fff5ee] transition-colors w-fit">
                   Xem combo <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
 
             <div className="relative overflow-hidden rounded-2xl aspect-[4/3]">
-              <img
-                src="https://images.unsplash.com/photo-1586816001966-79b736744398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600"
-                alt=""
-                className="absolute inset-0 w-full h-full object-cover"
-              />
+              <img src="https://images.unsplash.com/photo-1586816001966-79b736744398?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=600" alt="" className="absolute inset-0 w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
               <div className="absolute inset-0 p-5 flex flex-col justify-end">
-                <span className="inline-block mb-2 px-2.5 py-0.5 bg-[#2D6A4F] text-white text-[10px] font-bold rounded-full w-fit uppercase tracking-wide">
-                  Miễn phí vận chuyển
-                </span>
+                <span className="inline-block mb-2 px-2.5 py-0.5 bg-[#2D6A4F] text-white text-[10px] font-bold rounded-full w-fit uppercase tracking-wide">Miễn phí vận chuyển</span>
                 <h3 className="text-white text-xl font-black leading-tight mb-1">Free Ship<br />Toàn Quốc</h3>
                 <p className="text-white/70 text-xs mb-3">Đơn hàng từ 500.000đ</p>
-                <Link
-                  to="/products"
-                  className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide hover:bg-[#fff5ee] transition-colors w-fit"
-                >
+                <Link to="/products" className="inline-flex items-center gap-1 px-3 py-1.5 bg-white text-[#7C2D12] rounded-full text-xs font-bold uppercase tracking-wide hover:bg-[#fff5ee] transition-colors w-fit">
                   Mua ngay <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
@@ -315,16 +293,13 @@ export default function HomePage() {
             <p className="text-[#d35f1a] italic text-sm font-medium mb-1">Đặc sản của chúng tôi</p>
             <h2 className="text-3xl font-black text-gray-900 tracking-tight">SẢN PHẨM NỔI BẬT</h2>
           </div>
-          <Link
-            to="/products"
-            className="hidden sm:flex items-center gap-1 text-sm font-semibold text-[#7C2D12] hover:text-[#6B2510] transition-colors"
-          >
+          <Link to="/products" className="hidden sm:flex items-center gap-1 text-sm font-semibold text-[#7C2D12] hover:text-[#6B2510] transition-colors">
             Xem tất cả <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
 
         {featuredProducts.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 animate-pulse">
                 <div className="w-full h-52 bg-gray-200" />
@@ -341,7 +316,7 @@ export default function HomePage() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
             {featuredProducts.map((p: Product) => (
               <ProductCard key={p.id} product={p} />
             ))}

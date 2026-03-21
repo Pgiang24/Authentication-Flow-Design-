@@ -7,10 +7,10 @@ type Mode = "login" | "register";
 
 function PasswordStrength({ password }: { password: string }) {
   const checks = [
-    { label: "8+ characters", pass: password.length >= 8 },
+    { label: "8+ characters",    pass: password.length >= 8 },
     { label: "Uppercase letter", pass: /[A-Z]/.test(password) },
-    { label: "Number", pass: /[0-9]/.test(password) },
-    { label: "Special character", pass: /[^A-Za-z0-9]/.test(password) },
+    { label: "Number",           pass: /[0-9]/.test(password) },
+    { label: "Special character",pass: /[^A-Za-z0-9]/.test(password) },
   ];
   const strength = checks.filter((c) => c.pass).length;
   const colors = ["bg-red-400", "bg-orange-400", "bg-yellow-400", "bg-green-500"];
@@ -50,19 +50,15 @@ function PasswordStrength({ password }: { password: string }) {
 export default function AuthPage() {
   const navigate = useNavigate();
   const { login, register } = useAuth();
-  const [mode, setMode] = useState<Mode>("login");
+  const [mode, setMode]               = useState<Mode>("login");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showConfirm, setShowConfirm]   = useState(false);
+  const [loading, setLoading]           = useState(false);
+  const [error, setError]               = useState("");
+  const [rememberMe, setRememberMe]     = useState(false);
 
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    confirmPassword: "",
+    name: "", email: "", phone: "", password: "", confirmPassword: "",
   });
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,10 +68,7 @@ export default function AuthPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.email || !form.password) {
-      setError("Please fill in all fields.");
-      return;
-    }
+    if (!form.email || !form.password) { setError("Please fill in all fields."); return; }
     setLoading(true);
     const result = await login(form.email, form.password);
     setLoading(false);
@@ -92,27 +85,20 @@ export default function AuthPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      setError("Please fill in all required fields.");
-      return;
+      setError("Please fill in all required fields."); return;
     }
-    if (form.password !== form.confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-    if (form.password.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
+    if (form.password !== form.confirmPassword) { setError("Passwords do not match."); return; }
+    if (form.password.length < 8) { setError("Password must be at least 8 characters."); return; }
     setLoading(true);
     const result = await register(form.name, form.email, form.password, form.phone);
     setLoading(false);
-    if (result.success) navigate("/customer");
+    if (result.success) navigate("/");
     else setError(result.error || "Registration failed.");
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Left Panel - Brand */}
+      {/* Left Panel */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1592513388667-c01b5a7b7dc6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200"
@@ -121,7 +107,6 @@ export default function AuthPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-br from-[#1C0A00]/80 via-[#7C2D12]/60 to-[#2D6A4F]/50" />
         <div className="relative z-10 flex flex-col justify-between p-12 text-white w-full">
-          {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
               <span className="text-2xl">🏔️</span>
@@ -131,8 +116,6 @@ export default function AuthPage() {
               <div className="text-sm text-white/70">Premium Smoked Meats</div>
             </div>
           </div>
-
-          {/* Tagline */}
           <div className="space-y-6">
             <h1 className="text-5xl font-bold leading-tight">
               From Our Farm<br />
@@ -144,8 +127,8 @@ export default function AuthPage() {
             <div className="flex flex-col gap-4 pt-4">
               {[
                 { icon: Mountain, text: "Farm-raised in the Northwest mountains" },
-                { icon: Leaf, text: "100% natural, no preservatives or MSG" },
-                { icon: Shield, text: "VSATTP certified & food safety compliant" },
+                { icon: Leaf,     text: "100% natural, no preservatives or MSG" },
+                { icon: Shield,   text: "VSATTP certified & food safety compliant" },
               ].map(({ icon: Icon, text }) => (
                 <div key={text} className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-[#D4A853]/30 flex items-center justify-center flex-shrink-0">
@@ -156,15 +139,11 @@ export default function AuthPage() {
               ))}
             </div>
           </div>
-
-          {/* Bottom */}
-          <div className="text-white/40 text-sm">
-            © 2026 ALE Farm's. All rights reserved.
-          </div>
+          <div className="text-white/40 text-sm">© 2026 ALE Farm's. All rights reserved.</div>
         </div>
       </div>
 
-      {/* Right Panel - Form */}
+      {/* Right Panel */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-[#FAF7F2] p-6">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
@@ -196,7 +175,7 @@ export default function AuthPage() {
             </div>
 
             {mode === "login" ? (
-              <form onSubmit={handleLogin} className="space-y-5">
+              <form onSubmit={handleLogin} className="space-y-5" autoComplete="on">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Welcome back</h2>
                   <p className="text-gray-500 text-sm mt-1">Sign in to your ALE Farm's account</p>
@@ -204,12 +183,13 @@ export default function AuthPage() {
 
                 <div className="space-y-4 pt-2">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Email / Phone</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
                     <input
-                      type="text"
+                      type="email"
                       value={form.email}
                       onChange={set("email")}
-                      placeholder="you@example.com or 09xx"
+                      placeholder="you@example.com"
+                      autoComplete="email"
                       className={`w-full px-4 py-3 rounded-xl border bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20 ${error && !form.email ? "border-red-400 bg-red-50" : "border-gray-200"}`}
                     />
                   </div>
@@ -222,6 +202,7 @@ export default function AuthPage() {
                         value={form.password}
                         onChange={set("password")}
                         placeholder="••••••••"
+                        autoComplete="current-password"
                         className={`w-full px-4 py-3 pr-12 rounded-xl border bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20 ${error && !form.password ? "border-red-400 bg-red-50" : "border-gray-200"}`}
                       />
                       <button
@@ -251,9 +232,7 @@ export default function AuthPage() {
                 </div>
 
                 {error && (
-                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
-                    {error}
-                  </div>
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
                 )}
 
                 <button
@@ -261,9 +240,7 @@ export default function AuthPage() {
                   disabled={loading}
                   className="w-full py-3.5 bg-[#7C2D12] hover:bg-[#6B2510] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                 >
-                  {loading ? (
-                    <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  ) : null}
+                  {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                   {loading ? "Signing in..." : "Log In"}
                 </button>
 
@@ -279,7 +256,7 @@ export default function AuthPage() {
                 </div>
               </form>
             ) : (
-              <form onSubmit={handleRegister} className="space-y-5">
+              <form onSubmit={handleRegister} className="space-y-5" autoComplete="on">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Create account</h2>
                   <p className="text-gray-500 text-sm mt-1">Join ALE Farm's community today</p>
@@ -293,6 +270,7 @@ export default function AuthPage() {
                       value={form.name}
                       onChange={set("name")}
                       placeholder="Nguyen Van A"
+                      autoComplete="name"
                       className={`w-full px-4 py-3 rounded-xl border bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20 ${error && !form.name ? "border-red-400 bg-red-50" : "border-gray-200"}`}
                     />
                   </div>
@@ -305,6 +283,7 @@ export default function AuthPage() {
                         value={form.email}
                         onChange={set("email")}
                         placeholder="you@example.com"
+                        autoComplete="email"
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20"
                       />
                     </div>
@@ -315,6 +294,7 @@ export default function AuthPage() {
                         value={form.phone}
                         onChange={set("phone")}
                         placeholder="09xx xxx xxx"
+                        autoComplete="tel"
                         className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20"
                       />
                     </div>
@@ -328,6 +308,7 @@ export default function AuthPage() {
                         value={form.password}
                         onChange={set("password")}
                         placeholder="••••••••"
+                        autoComplete="new-password"
                         className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20"
                       />
                       <button
@@ -349,6 +330,7 @@ export default function AuthPage() {
                         value={form.confirmPassword}
                         onChange={set("confirmPassword")}
                         placeholder="••••••••"
+                        autoComplete="new-password"
                         className={`w-full px-4 py-3 pr-12 rounded-xl border bg-gray-50 text-sm outline-none transition-all focus:bg-white focus:border-[#7C2D12] focus:ring-2 focus:ring-[#7C2D12]/20 ${form.confirmPassword && form.confirmPassword !== form.password ? "border-red-400 bg-red-50" : "border-gray-200"}`}
                       />
                       <button
@@ -366,9 +348,7 @@ export default function AuthPage() {
                 </div>
 
                 {error && (
-                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">
-                    {error}
-                  </div>
+                  <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm">{error}</div>
                 )}
 
                 <button
@@ -376,7 +356,7 @@ export default function AuthPage() {
                   disabled={loading}
                   className="w-full py-3.5 bg-[#7C2D12] hover:bg-[#6B2510] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 disabled:opacity-70"
                 >
-                  {loading ? <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : null}
+                  {loading && <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
                   {loading ? "Creating account..." : "Create Account"}
                 </button>
 

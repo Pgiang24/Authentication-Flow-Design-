@@ -145,7 +145,7 @@ export default function AdminLayout() {
 
           {/* Customer View Link */}
           <Link
-            to="/customer"
+            to="/"
             className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-[#7C2D12] border border-gray-200 rounded-lg hover:border-[#7C2D12] transition-all"
           >
             View Store →
